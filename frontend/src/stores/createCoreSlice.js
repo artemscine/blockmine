@@ -54,7 +54,7 @@ export const createCoreSlice = (set, get) => ({
         const SOCKET_URL = import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin;
 
         const newSocket = io(SOCKET_URL, {
-            path: "/socket.io/",
+            path: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/socket.io/`,
             auth: { token },
             reconnectionAttempts: 5,
             reconnectionDelay: 2000,

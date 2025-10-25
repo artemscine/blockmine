@@ -23,7 +23,8 @@ export const apiHelper = async (url, options = {}, successMessage) => {
     }
 
     try {
-        const response = await fetch(url, finalOptions);
+const finalUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${url}`;
+const response = await fetch(finalUrl, finalOptions);
 
         const contentType = response.headers.get('Content-Type');
         if (contentType?.includes('application/zip') || contentType?.includes('application/octet-stream')) {

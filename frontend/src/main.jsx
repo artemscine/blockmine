@@ -135,7 +135,8 @@ const router = createBrowserRouter([
       }
     ]
   }
-]);
+], { basename: '/blockmine' });
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
