@@ -44,7 +44,7 @@ export default function PluginDetailPage() {
                 const data = await response.json();
                 
                 try {
-                    const statsResponse = await fetch('http://185.65.200.184:3000/api/stats');
+		const statsResponse = await fetch('/blockmine-proxy/api/stats');
                     if (statsResponse.ok) {
                         const statsData = await statsResponse.json();
                         const pluginStats = statsData?.plugins?.find(p => p.pluginName === data.name);

@@ -64,7 +64,7 @@ export const createPluginSlice = (set, get) => {
                 let statsMap = new Map();
                 try {
                     await new Promise(resolve => setTimeout(resolve, 1000));
-                    const statsResponse = await fetch('http://185.65.200.184:3000/api/stats');
+			const statsResponse = await fetch('/blockmine-proxy/api/stats');
                     if (statsResponse.ok) {
                         const statsData = await statsResponse.json();
                         statsMap = new Map((statsData?.plugins || []).map(p => [p.pluginName, p.downloadCount]));

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { Heart, Upload, Search, Settings, ShoppingBag } from 'lucide-react';
 import { api } from '@/lib/api';
 
-const STATS_SERVER_URL = 'http://185.65.200.184:3000';
+const STATS_SERVER_URL = '/blockmine-proxy';
 
 export default function GraphStorePage() {
     const [graphs, setGraphs] = useState([]);
