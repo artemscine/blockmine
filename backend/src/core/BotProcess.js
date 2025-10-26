@@ -555,9 +555,32 @@ process.on('message', async (message) => {
             let messageHandledByCustomParser = false;
 
             bot.on('message', (jsonMsg) => {
-                const ansiMessage = jsonMsg.toAnsi();
-                if (ansiMessage.trim()) {
-                    sendLog(ansiMessage);
+                const stripMode = bot.config.stripAnsiFromLogs || 'off';
+                let logContent;
+
+                switch (stripMode) {
+                    case 'simple': {
+                        // Удаляет только 24-битные "true color" коды (градиенты)
+                        const ansiRegexTrueColor = /\u001b\[(38|48);2;\d{1,3};\d{1,3};\d{1,3}m/g;
+                        logContent = jsonMsg.toAnsi().replace(ansiRegexTrueColor, '');
+                        break;
+                    }
+                    case 'strip': {
+                        // Удаляет АБСОЛЮТНО ВСЕ ANSI коды
+                        const ansiRegexAll = /[\u001b\u009b][[()#;?]?[0-9]{1,4}(?:;[0-9]{0,4})*[0-9A-ORZcf-nqry=><]/g;
+                        logContent = jsonMsg.toString().replace(ansiRegexAll, '');
+                        break;
+                    }
+                    case 'off':
+                    default: {
+                        // Оставляет все как есть
+                        logContent = jsonMsg.toAnsi();
+                        break;
+                    }
+                }
+
+                if (logContent.trim()) {
+                    sendLog(logContent);
                 }
 
                 messageHandledByCustomParser = false;

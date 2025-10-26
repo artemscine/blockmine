@@ -20,7 +20,8 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
         proxyHost: '',
         proxyPort: '',
         proxyUsername: '',
-        proxyPassword: ''
+        proxyPassword: '',
+        stripAnsiFromLogs: 'off'
     });
     const [usernameError, setUsernameError] = useState('');
     const isInitialized = React.useRef(false);
@@ -44,7 +45,8 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
                 proxyHost: bot.proxyHost || '',
                 proxyPort: bot.proxyPort || '',
                 proxyUsername: bot.proxyUsername || '',
-                proxyPassword: ''
+                proxyPassword: '',
+                stripAnsiFromLogs: bot.stripAnsiFromLogs || 'off'
             });
         } else if (importedData && isCreation) {
             const importedServerName = importedData.bot?.server?.name;
@@ -280,7 +282,44 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
                     </CardContent>
                 </ScrollArea>
             )}
-            
+
+        {!disableScrollArea && (
+            <div className="px-6 pb-4">
+                <Separator className="my-4" />
+                <div className="space-y-2 rounded-lg border p-4 shadow-sm">
+                    <Label htmlFor="stripAnsiFromLogs">Очистка цветов в консоли</Label>
+                    <Select
+                        value={formData.stripAnsiFromLogs || 'off'}
+                        onValueChange={(value) => {
+                            setFormData(prev => ({ ...prev, stripAnsiFromLogs: value }));
+                        }}
+                    >
+                        <SelectTrigger id="stripAnsiFromLogs">
+                            <SelectValue placeholder="Выберите режим..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="off">
+                                <div className="font-medium">Выключено</div>
+                                <div className="text-xs text-muted-foreground">Все цвета отображаются (может тормозить).</div>
+                            </SelectItem>
+                            <SelectItem value="simple">
+                                <div className="font-medium">Упрощенный режим (рекомендуется)</div>
+                                <div className="text-xs text-muted-foreground">Удаляются только градиенты, основные цвета остаются.</div>
+                            </SelectItem>
+                            <SelectItem value="strip">
+                                <div className="font-medium">Полностью отключить</div>
+                                <div className="text-xs text-muted-foreground">Максимальная производительность, все цвета удалены.</div>
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground pt-2">
+                        "Упрощенный режим" решает проблему с "переливающимися" сообщениями, сохраняя при этом базовую расцветку.
+                    </p>
+                </div>
+            </div>
+        )}
+        
+        
             {showFooter && !disableScrollArea && (
                  <CardFooter className="pt-6 border-t">
                     <Button type="submit" disabled={isSaving} className="w-full">

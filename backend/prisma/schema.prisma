@@ -25,6 +25,8 @@ model Bot {
   owners   String? @default("")
   sortOrder Int?
 
+  stripAnsiFromLogs String  @default("off")
+
   server   Server @relation(fields: [serverId], references: [id])
   serverId Int
 
