@@ -68,6 +68,7 @@ export default function ConfigurationPage() {
                 }
                 if (!dataToSend.password) delete dataToSend.password;
                 if (!dataToSend.proxyPassword) delete dataToSend.proxyPassword;
+                dataToSend.stripAnsiFromLogs = changes.bot.stripAnsiFromLogs ?? allSettings.bot.stripAnsiFromLogs ?? 'off';
                 
                 updatedBotData = await apiHelper(`/api/bots/${botId}`, {
                     method: 'PUT',
