@@ -405,7 +405,7 @@ router.put('/:id', authenticate, checkBotAccess, authorize('bot:update'), async 
     try {
         const { 
             username, password, prefix, serverId, note, owners,
-            proxyHost, proxyPort, proxyUsername, proxyPassword 
+            proxyHost, proxyPort, proxyUsername, proxyPassword
         } = req.body;
 
         let dataToUpdate = {
@@ -415,7 +415,7 @@ router.put('/:id', authenticate, checkBotAccess, authorize('bot:update'), async 
             owners,
             proxyHost,
             proxyPort: proxyPort ? parseInt(proxyPort, 10) : null,
-            proxyUsername,
+            proxyUsername
         };
 
         if (password) {

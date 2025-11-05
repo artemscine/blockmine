@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from '@/components/ui/separator';
@@ -280,7 +281,7 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
                     </CardContent>
                 </ScrollArea>
             )}
-            
+        
             {showFooter && !disableScrollArea && (
                  <CardFooter className="pt-6 border-t">
                     <Button type="submit" disabled={isSaving} className="w-full">
