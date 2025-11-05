@@ -104,17 +104,17 @@ export default function ConsoleTab() {
         setShowPerformanceWarning(false);
     }, [botId]);
 
+    const handleGradientToggle = useCallback((checked) => {
+        setGradientEnabled(checked);
+        localStorage.setItem(`bot_${botId}_gradient`, JSON.stringify(checked));
+    }, [botId]);
+
     useEffect(() => {
         setIsUserScrolledUp(false);
         scrollToBottom();
         const saved = localStorage.getItem(`bot_${botId}_gradient`);
         setGradientEnabled(saved !== null ? JSON.parse(saved) : true);
     }, [botId, scrollToBottom]);
-
-    const handleGradientToggle = useCallback((checked) => {
-        setGradientEnabled(checked);
-        localStorage.setItem(`bot_${botId}_gradient`, JSON.stringify(checked));
-    }, [botId]);
 
     useEffect(() => {
         if (!isUserScrolledUp && lastLogCount.current !== logs.length) {
@@ -147,47 +147,46 @@ export default function ConsoleTab() {
                 </div>
             </div>
 
-            <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                <div className="flex gap-2">
-                    {showPerformanceWarning && (
-                        <Button
-                            className="rounded-full h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
-                            variant="secondary"
-                            size="sm"
-                            title={`Большое количество логов может снизить производительность. Очистите логи для улучшения.`}
-                        >
-                            <AlertTriangle className="h-4 w-4" />
-                        </Button>
-                    )}
-                    {isUserScrolledUp && (
-                        <Button
-                            onClick={() => {
-                                scrollToBottom();
-                                setIsUserScrolledUp(false);
-                            }}
-                            className="rounded-full h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
-                            variant="secondary"
-                            size="sm"
-                            title="Прокрутить вниз"
-                        >
-                            <ArrowDown className="h-4 w-4" />
-                        </Button>
-                    )}
+            <div className="absolute top-2 right-2 md:right-6 flex items-center gap-2">
+                {showPerformanceWarning && (
                     <Button
-                        onClick={clearLogs}
-                        className="rounded-full h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
+                        className="rounded-full h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
                         variant="secondary"
                         size="sm"
-                        title="Очистить консоль"
+                        title={`Большое количество логов может снизить производительность. Очистите логи для улучшения.`}
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <AlertTriangle className="h-4 w-4" />
                     </Button>
-                </div>
-                <div className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-sm">
-                    <span className="text-sm font-medium text-foreground">Градиент</span>
+                )}
+                {isUserScrolledUp && (
+                    <Button
+                        onClick={() => {
+                            scrollToBottom();
+                            setIsUserScrolledUp(false);
+                        }}
+                        className="rounded-full h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
+                        variant="secondary"
+                        size="sm"
+                        title="Прокрутить вниз"
+                    >
+                        <ArrowDown className="h-4 w-4" />
+                    </Button>
+                )}
+                <Button
+                    onClick={clearLogs}
+                    className="rounded-full h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
+                    variant="secondary"
+                    size="sm"
+                    title="Очистить консоль"
+                >
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center gap-1.5 bg-background/95 backdrop-blur-sm border border-border rounded-lg px-2 py-1.5 shadow-sm">
+                    <span className="text-xs font-medium text-foreground whitespace-nowrap">Градиент</span>
                     <Switch
                         checked={gradientEnabled}
                         onCheckedChange={handleGradientToggle}
+                        className="scale-75"
                     />
                 </div>
             </div>
