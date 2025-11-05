@@ -417,7 +417,7 @@ router.put('/:id', authenticate, checkBotAccess, authorize('bot:update'), async 
             proxyHost,
             proxyPort: proxyPort ? parseInt(proxyPort, 10) : null,
             proxyUsername,
-            stripAnsiFromLogs: ['off', 'simple', 'strip'].includes(stripAnsiFromLogs) ? stripAnsiFromLogs : 'off'
+            stripAnsiFromLogs: ['off', 'simple'].includes(stripAnsiFromLogs) ? stripAnsiFromLogs : 'off'
         };
 
         if (password) {

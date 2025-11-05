@@ -560,9 +560,12 @@ process.on('message', async (message) => {
 
                 switch (stripMode) {
                     case 'simple': {
-                        // Удаляет только 24-битные "true color" коды (градиенты)
-                        const ansiRegexTrueColor = /\u001b\[(38|48);2;\d{1,3};\d{1,3};\d{1,3}m/g;
-                        logContent = jsonMsg.toAnsi().replace(ansiRegexTrueColor, '');
+                        // Удаляет true color (24-bit), 256-color палитру и сложные стили
+                        // Оставляет только базовые цвета (коды 30-37, 40-47, 90-97, 100-107)
+                        logContent = jsonMsg.toAnsi()
+                            .replace(/\u001b\[(38|48);2;\d{1,3};\d{1,3};\d{1,3}m/g, '') // true color
+                            .replace(/\u001b\[(38|48);5;([1-9]\d{1,2}|[2-9]\d)m/g, '') // 256-color (16-255)
+                            .replace(/\u001b\[[3-4-9]m/g, ''); // italic(3), underline(4), strike(9)
                         break;
                     }
                     case 'strip': {

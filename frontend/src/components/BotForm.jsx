@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from '@/components/ui/separator';
@@ -286,35 +287,27 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
         {!disableScrollArea && (
             <div className="px-6 pb-4">
                 <Separator className="my-4" />
-                <div className="space-y-2 rounded-lg border p-4 shadow-sm">
-                    <Label htmlFor="stripAnsiFromLogs">Очистка цветов в консоли</Label>
-                    <Select
-                        value={formData.stripAnsiFromLogs || 'off'}
-                        onValueChange={(value) => {
-                            setFormData(prev => ({ ...prev, stripAnsiFromLogs: value }));
-                        }}
-                    >
-                        <SelectTrigger id="stripAnsiFromLogs">
-                            <SelectValue placeholder="Выберите режим..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="off">
-                                <div className="font-medium">Выключено</div>
-                                <div className="text-xs text-muted-foreground">Все цвета отображаются (может тормозить).</div>
-                            </SelectItem>
-                            <SelectItem value="simple">
-                                <div className="font-medium">Упрощенный режим (рекомендуется)</div>
-                                <div className="text-xs text-muted-foreground">Удаляются только градиенты, основные цвета остаются.</div>
-                            </SelectItem>
-                            <SelectItem value="strip">
-                                <div className="font-medium">Полностью отключить</div>
-                                <div className="text-xs text-muted-foreground">Максимальная производительность, все цвета удалены.</div>
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground pt-2">
-                        "Упрощенный режим" решает проблему с "переливающимися" сообщениями, сохраняя при этом базовую расцветку.
-                    </p>
+                <div className="space-y-3 rounded-lg border p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <Label htmlFor="stripAnsiFromLogs" className="text-base">
+                                Отключить градиент в консоли
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                                Удаляет только градиентные цвета, сохраняя базовую раскраску. Улучшает производительность консоли.
+                            </p>
+                        </div>
+                        <Switch
+                            id="stripAnsiFromLogs"
+                            checked={formData.stripAnsiFromLogs === 'simple'}
+                            onCheckedChange={(checked) => {
+                                setFormData(prev => ({ 
+                                    ...prev, 
+                                    stripAnsiFromLogs: checked ? 'simple' : 'off' 
+                                }));
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         )}
