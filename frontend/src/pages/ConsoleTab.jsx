@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { useParams } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Send, ArrowDown, Trash2, AlertTriangle } from 'lucide-react';
 import AnsiToHtml from 'ansi-to-html';
 import { useAppStore } from '@/stores/appStore';
@@ -15,9 +16,17 @@ const ansiConverter = new AnsiToHtml({
     escapeXML: true,
 });
 
-const LogLine = React.memo(({ log }) => {
+const stripGradientCodes = (text) => {
+    return text
+        .replace(/\u001b\[(38|48);2;\d{1,3};\d{1,3};\d{1,3}m/g, '')
+        .replace(/\u001b\[(38|48);5;([1-9]\d{1,2}|[2-9]\d)m/g, '')
+        .replace(/\u001b\[[3-4-9]m/g, '');
+};
+
+const LogLine = React.memo(({ log, gradientEnabled }) => {
     const logContent = typeof log === 'object' && log !== null && log.content ? log.content : (typeof log === 'string' ? log : '');
-    const htmlContent = useMemo(() => ansiConverter.toHtml(logContent), [logContent]);
+    const processedContent = gradientEnabled ? logContent : stripGradientCodes(logContent);
+    const htmlContent = useMemo(() => ansiConverter.toHtml(processedContent), [processedContent]);
 
     return (
         <div className="log-line leading-relaxed whitespace-pre-wrap break-all px-4 py-1">
@@ -49,6 +58,10 @@ export default function ConsoleTab() {
     const [command, setCommand] = useState('');
     const [isUserScrolledUp, setIsUserScrolledUp] = useState(false);
     const [showPerformanceWarning, setShowPerformanceWarning] = useState(false);
+    const [gradientEnabled, setGradientEnabled] = useState(() => {
+        const saved = localStorage.getItem(`bot_${botId}_gradient`);
+        return saved !== null ? JSON.parse(saved) : true;
+    });
     const logContainerRef = useRef(null);
     const lastLogCount = useRef(0);
 
@@ -94,7 +107,14 @@ export default function ConsoleTab() {
     useEffect(() => {
         setIsUserScrolledUp(false);
         scrollToBottom();
+        const saved = localStorage.getItem(`bot_${botId}_gradient`);
+        setGradientEnabled(saved !== null ? JSON.parse(saved) : true);
     }, [botId, scrollToBottom]);
+
+    const handleGradientToggle = useCallback((checked) => {
+        setGradientEnabled(checked);
+        localStorage.setItem(`bot_${botId}_gradient`, JSON.stringify(checked));
+    }, [botId]);
 
     useEffect(() => {
         if (!isUserScrolledUp && lastLogCount.current !== logs.length) {
@@ -122,45 +142,54 @@ export default function ConsoleTab() {
                     className="h-full overflow-y-auto font-mono text-sm"
                 >
                     {logs.map((log) => (
-                        <LogLine key={log.id} log={log} />
+                        <LogLine key={log.id} log={log} gradientEnabled={gradientEnabled} />
                     ))}
                 </div>
             </div>
 
-            <div className="absolute top-2 right-2 flex gap-2">
-                {showPerformanceWarning && (
+            <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                <div className="flex gap-2">
+                    {showPerformanceWarning && (
+                        <Button
+                            className="rounded-full h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
+                            variant="secondary"
+                            size="sm"
+                            title={`Большое количество логов может снизить производительность. Очистите логи для улучшения.`}
+                        >
+                            <AlertTriangle className="h-4 w-4" />
+                        </Button>
+                    )}
+                    {isUserScrolledUp && (
+                        <Button
+                            onClick={() => {
+                                scrollToBottom();
+                                setIsUserScrolledUp(false);
+                            }}
+                            className="rounded-full h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
+                            variant="secondary"
+                            size="sm"
+                            title="Прокрутить вниз"
+                        >
+                            <ArrowDown className="h-4 w-4" />
+                        </Button>
+                    )}
                     <Button
-                        className="rounded-full h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
+                        onClick={clearLogs}
+                        className="rounded-full h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
                         variant="secondary"
                         size="sm"
-                        title={`Большое количество логов может снизить производительность. Очистите логи для улучшения.`}
+                        title="Очистить консоль"
                     >
-                        <AlertTriangle className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                     </Button>
-                )}
-                {isUserScrolledUp && (
-                    <Button
-                        onClick={() => {
-                            scrollToBottom();
-                            setIsUserScrolledUp(false);
-                        }}
-                        className="rounded-full h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
-                        variant="secondary"
-                        size="sm"
-                        title="Прокрутить вниз"
-                    >
-                        <ArrowDown className="h-4 w-4" />
-                    </Button>
-                )}
-                <Button
-                    onClick={clearLogs}
-                    className="rounded-full h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
-                    variant="secondary"
-                    size="sm"
-                    title="Очистить консоль"
-                >
-                    <Trash2 className="h-4 w-4" />
-                </Button>
+                </div>
+                <div className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-sm">
+                    <span className="text-sm font-medium text-foreground">Градиент</span>
+                    <Switch
+                        checked={gradientEnabled}
+                        onCheckedChange={handleGradientToggle}
+                    />
+                </div>
             </div>
 
             <form onSubmit={handleSendCommand} className="flex-shrink-0 flex flex-col gap-2 p-2 bg-muted/50 border-t border-border">

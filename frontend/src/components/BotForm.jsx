@@ -21,8 +21,7 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
         proxyHost: '',
         proxyPort: '',
         proxyUsername: '',
-        proxyPassword: '',
-        stripAnsiFromLogs: 'off'
+        proxyPassword: ''
     });
     const [usernameError, setUsernameError] = useState('');
     const isInitialized = React.useRef(false);
@@ -46,8 +45,7 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
                 proxyHost: bot.proxyHost || '',
                 proxyPort: bot.proxyPort || '',
                 proxyUsername: bot.proxyUsername || '',
-                proxyPassword: '',
-                stripAnsiFromLogs: bot.stripAnsiFromLogs || 'off'
+                proxyPassword: ''
             });
         } else if (importedData && isCreation) {
             const importedServerName = importedData.bot?.server?.name;
@@ -283,35 +281,6 @@ export default function BotForm({ bot, servers, onFormChange, onFormSubmit, isCr
                     </CardContent>
                 </ScrollArea>
             )}
-
-        {!disableScrollArea && (
-            <div className="px-6 pb-4">
-                <Separator className="my-4" />
-                <div className="space-y-3 rounded-lg border p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                            <Label htmlFor="stripAnsiFromLogs" className="text-base">
-                                Отключить градиент в консоли
-                            </Label>
-                            <p className="text-sm text-muted-foreground">
-                                Удаляет только градиентные цвета, сохраняя базовую раскраску. Улучшает производительность консоли.
-                            </p>
-                        </div>
-                        <Switch
-                            id="stripAnsiFromLogs"
-                            checked={formData.stripAnsiFromLogs === 'simple'}
-                            onCheckedChange={(checked) => {
-                                setFormData(prev => ({ 
-                                    ...prev, 
-                                    stripAnsiFromLogs: checked ? 'simple' : 'off' 
-                                }));
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-        )}
-        
         
             {showFooter && !disableScrollArea && (
                  <CardFooter className="pt-6 border-t">
